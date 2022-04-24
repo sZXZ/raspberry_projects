@@ -16,3 +16,11 @@ def get_table(url, use_class_filter=False, class_filter='') -> pd.DataFrame:
         tables = soup.findAll('table')
     df = pd.read_html(str(tables))
     return df
+
+def get_soup(url) -> pd.DataFrame:
+    '''get website
+    '''
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'}
+    html = requests.get(url, headers=headers).content
+    soup = BeautifulSoup(html, features="html.parser")
+    return soup
