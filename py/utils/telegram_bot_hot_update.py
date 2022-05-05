@@ -57,6 +57,9 @@ def replay(user, msg):
         msg = "\n".join(product_list)
         bot.send_message(text=f"Cписок:\n{msg}", chat_id=user)
         return 0
+    if "Погода" in msg:
+        bot.send_message(text=f"{get_weather()}", chat_id=user)
+        return 0
     if "Пыльца" in msg:
         offset = msg.split(" ")[-1]
         try:
@@ -70,6 +73,24 @@ def replay(user, msg):
         except Exception as ex:
             bot.send_message(text=f"{ex}", chat_id=user)
         return 0
+    if "Включи свет" in msg:
+        from miio import Yeelight
+        lamp = Yeelight(ip=code_secrets.MILAMP["ip"], token=code_secrets.MILAMP["token"], model='yeelink.light.color5')
+        if "работа" in msg.lower():
+            lamp.set_brightness(66)
+            lamp.set_color_temp(4038)
+            bot.send_message(text=f"Удачно поработать :)", chat_id=user)
+            return 0
+        if "чил" in msg.lower():
+            lamp.set_rgb((255,116,0))
+            bot.send_message(text=f"<3", chat_id=user)
+            return 0
+        if "вечер" in msg.lower():
+            lamp.set_color_temp(3325)
+            lamp.set_brightness(100)
+            bot.send_message(text=f"Сразу стало уютно!", chat_id=user)
+            return 0
+        return 0
     if "Бэкап" in msg:
         from subprocess import run
 
@@ -77,6 +98,32 @@ def replay(user, msg):
         bot.send_message(text=f"Cделал бэкап файлов", chat_id=user)
         return 0
     bot.send_message(text=f"Hi, I don't know how to: \n'{msg}''", chat_id=user)
+
+
+def get_weather():
+    import json
+    from datetime import datetime
+
+    import requests
+
+    lat = "54"
+    lon = "25"
+    api = code_secrets.OPENWEATHERMAP
+    url = f"https://api.openweathermap.org/data/2.5/weather?q=Vilnius&appid={api}&units=metric"
+    weather = requests.get(url)
+    data = weather.json()
+    main = data["main"]
+    text = []
+    text.append(f"{data['weather'][0]['description']}")
+    text.append(f"temp: {main['temp']} ({main['temp_min']} - {main['temp_max']})")
+    text.append(f"pressure: {main['pressure']} humidity: {main['humidity']}")
+    text.append(f"wind speed: {data['wind']['speed']}")
+    text.append(f"feels_like: {main['feels_like']}")
+    text.append(
+        f"{datetime.fromtimestamp(data['sys']['sunset']-datetime.now().timestamp()):%H:%M} to sunset"
+    )
+    # text = json.dumps(weather.json(), indent=4)
+    return "\n".join(text)
 
 
 def get_pollen(offset: int):
