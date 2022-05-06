@@ -91,6 +91,17 @@ def replay(user, msg):
             bot.send_message(text=f"Сразу стало уютно!", chat_id=user)
             return 0
         return 0
+    if "Яркость" in msg:
+        from miio import Yeelight
+        lamp = Yeelight(ip=code_secrets.MILAMP["ip"], token=code_secrets.MILAMP["token"], model='yeelink.light.color5')
+        brightness = msg.split(" ")[-1]
+        try:
+            brightness = int(brightness)
+            lamp.set_brightness(brightness)
+            bot.send_message(text=f"Яркость {brightness}", chat_id=user)
+        except:
+            bot.send_message(text=f"Не знаю как поставить такую яркость", chat_id=user)
+        return 0
     if "Бэкап" in msg:
         from subprocess import run
 

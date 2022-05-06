@@ -24,6 +24,7 @@ if __name__ == "__main__":
         if folder in "photo":
             cmd.extend(["--exclude", "thumbnails**"])
         run(cmd)
-
+    
+    run(["rclone","sync", "out=/home/ubuntu/py", "y:pi/py"])
     run(["mongodump", "--out=/home/ubuntu/backup/", "--gzip"])
     run(["rclone", "sync", f"/home/ubuntu/backup", "y:pi/backup"])
