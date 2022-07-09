@@ -37,7 +37,7 @@ def replay(user, msg):
         else:
             bot.send_message(text=f"Не нашёл:{msg[7:]}", chat_id=user)
         return 0
-    if "Удалить список покупок" in msg:
+    if "Удалить список покупок" in msg or "Удалить список" in msg:
         from pymongo import MongoClient
 
         client = MongoClient("localhost", 27017)
