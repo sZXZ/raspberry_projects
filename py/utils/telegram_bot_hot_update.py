@@ -19,6 +19,26 @@ def shoping_list():
 
 def replay(user, msg):
     bot = Bot(code_secrets.TELEGRAM)
+    if "Что построить" in msg:
+        from pymongo import MongoClient
+
+        client = MongoClient("localhost", 27017)
+        db = client.lego.lego
+        product_list = []
+        for doc in db.find({}):
+            product_list.append(doc["name"])
+            
+        msg = "\n".join(product_list)
+        bot.send_message(text=f"Cписок:\n{msg}", chat_id=user)
+        return 0
+    if "Построить " in msg:
+        from pymongo import MongoClient
+
+        client = MongoClient("localhost", 27017)
+        db = client.lego.lego
+        db.insert_one({"name": msg[10:]})
+        bot.send_message(text=f"Добавил в список:{msg[10:]}", chat_id=user)
+        return 0
     if "Купить " in msg:
         from pymongo import MongoClient
 
